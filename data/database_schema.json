@@ -1,0 +1,207 @@
+[{
+    "TableName": "RawSysLogs",
+    "Schema": {
+        "Name": "RawSysLogs",
+        "OrderedColumns": [
+            {
+                "Name": "fields",
+                "Type": "System.Object",
+                "CslType": "dynamic"
+            },
+            {
+                "Name": "name",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "tags",
+                "Type": "System.Object",
+                "CslType": "dynamic"
+            },
+            {
+                "Name": "timestamp",
+                "Type": "System.DateTime",
+                "CslType": "datetime"
+            },
+            {
+                "Name": "1mbin",
+                "Type": "System.DateTime",
+                "CslType": "datetime"
+            }
+        ]
+    }
+}, 
+{
+    "TableName": "customers",
+    "Schema": {
+        "Name": "customers",
+        "OrderedColumns": [
+            {
+                "Name": "customer_id",
+                "Type": "System.Int64",
+                "CslType": "long"
+            },
+            {
+                "Name": "tax_id",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "tax_code",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "customer_name",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "state",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "city",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "postcode",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "street",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "number",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "unit",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "region",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "district",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "lon",
+                "Type": "System.Double",
+                "CslType": "real"
+            },
+            {
+                "Name": "lat",
+                "Type": "System.Double",
+                "CslType": "real"
+            },
+            {
+                "Name": "ship_to_address",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "valid_from",
+                "Type": "System.Int64",
+                "CslType": "long"
+            },
+            {
+                "Name": "valid_to",
+                "Type": "System.Double",
+                "CslType": "real"
+            },
+            {
+                "Name": "units_purchased",
+                "Type": "System.Double",
+                "CslType": "real"
+            },
+            {
+                "Name": "loyalty_segment",
+                "Type": "System.Int64",
+                "CslType": "long"
+            }
+        ]
+    }
+},
+{
+    "TableName": "products",
+    "Schema": {
+        "Name": "products",
+        "OrderedColumns": [
+            {
+                "Name": "product_id",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "product_category",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "product_name",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "sales_price",
+                "Type": "System.Double",
+                "CslType": "real"
+            },
+            {
+                "Name": "product_unit",
+                "Type": "System.String",
+                "CslType": "string"
+            }
+        ]
+    }
+},
+{
+    "TableName": "sales_orders",
+    "Schema": {
+        "Name": "sales_orders",
+        "OrderedColumns": [
+            {
+                "Name": "order_number",
+                "Type": "System.Int64",
+                "CslType": "long"
+            },
+            {
+                "Name": "order_datetime",
+                "Type": "System.DateTime",
+                "CslType": "datetime"
+            },
+            {
+                "Name": "customer_id",
+                "Type": "System.Int64",
+                "CslType": "long"
+            },
+            {
+                "Name": "product_id",
+                "Type": "System.String",
+                "CslType": "string"
+            },
+            {
+                "Name": "unit_price",
+                "Type": "System.Int64",
+                "CslType": "long"
+            },
+            {
+                "Name": "quantity",
+                "Type": "System.Int64",
+                "CslType": "long"
+            }
+        ]
+    }
+}]
