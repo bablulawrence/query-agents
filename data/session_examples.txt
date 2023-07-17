@@ -1,0 +1,16 @@
+Give me the total number of products
+Thought: I need to count all rows from products table.
+OutputQuery:
+products
+| count
+WAITING
+
+You will be then called again with the results of query execution:
+Results:
+77
+
+You will then output the following:
+Thought: Query is returning rows, there are no errors apparently. Therefore it is correct. 
+OutputQuery:
+products
+| count

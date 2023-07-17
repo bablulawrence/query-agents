@@ -187,9 +187,10 @@ dist-ssr
 # Local developemnt
 local
 .venv
-.vscode
 
 #prod build
 /dist
 **local.settings*
 
+
+.python_packages

@@ -1,5 +1,5 @@
 ####
-GET  {{funcUrl}}/api/req HTTP/1.1
+GET  {{funcUrl}}/api/req?query="Who are my most val custs̥" HTTP/1.1
 
 
 POST  {{funcUrl}}/api/query-agent HTTP/1.1
