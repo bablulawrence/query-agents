@@ -1,0 +1,10 @@
+####
+GET  {{funcUrl}}/api/req HTTP/1.1
+
+
+POST  {{funcUrl}}/api/query-agent HTTP/1.1
+
+{
+  "Query" : "list 10 products",    
+}
+
