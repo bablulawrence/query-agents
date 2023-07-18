@@ -14,7 +14,14 @@ PUT  {{funcUrl}}/api/index HTTP/1.1
 
 ####
 # GET  {{funcUrl}}/api/kql?query="Who are my most valuable customers" HTTP/1.1
-GET  {{funcUrl}}/api/kqlquery?query="List 10 customers" HTTP/1.1
+POST  {{funcUrl}}/api/kqlquery HTTP/1.1
+
+{
+  "query" : "List 10 customers",
+  "databaseSchemaFileName" : "database_schema.json",
+  "languageReferenceFileName": "language_reference.json",
+  "sessionExampleFileName": "session_examples.txt"
+}
 
 
 ####

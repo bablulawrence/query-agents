@@ -230,4 +230,4 @@ class QueryAgent(LLMChat):
                 logging.info(next_prompt)
             else:
                 # logging.error(query_text)
-                return query_text
+                return { "results": query_text, "messages": self.messages }
