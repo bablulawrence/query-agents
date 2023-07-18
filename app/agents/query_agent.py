@@ -25,13 +25,15 @@ from azure.search.documents.indexes.models import (
 )  
 
 class AzureSearchService:
-    def __init__(self):
+    def __init__(self, index_name):
         endpoint = os.environ["AZURE_SEARCH_SERVICE_ENDPOINT"]
-        index_name = os.environ["AZURE_SEARCH_INDEX_NAME"]
         credential = AzureKeyCredential(os.environ["AZURE_SEARCH_ADMIN_KEY"])
         self.index_client = SearchIndexClient(endpoint=endpoint, credential=credential)
         self.search_client = SearchClient(endpoint=endpoint, index_name=index_name, credential=credential)
+        self.index_name = index_name
 
+    def delete_index(self): 
+        self.index_client.delete_index(self.index_name)
 
     def create_examples_search_index(self, translation_examples, llmchat):        
 
@@ -70,8 +72,10 @@ class AzureSearchService:
 
         semantic_settings = SemanticSettings(configurations=[semantic_config])
 
-        index = SearchIndex(name=self.az_search_index_name, fields=fields,
-                            vector_search=vector_search, semantic_settings=semantic_settings)
+        index = SearchIndex(name=self.index_name, 
+                            fields=fields,
+                            vector_search=vector_search, 
+                            semantic_settings=semantic_settings)
         result = self.index_client.create_or_update_index(index)
 
         for item in translation_examples:
@@ -80,7 +84,9 @@ class AzureSearchService:
             item['InputQueryVector'] = llmchat.generate_embeddings(input_query)
             item['OutputQueryVector'] = llmchat.generate_embeddings(output_query)
 
-        result = self.search_client.upload_documents(json.dumps(translation_examples))  
+        logging.error(json.dumps(translation_examples[0]))
+        result = self.search_client.upload_documents(translation_examples)  
+        return result
 
     def search_examples_index(self, query, llmchat):        
         vector = llmchat.generate_embeddings(query)
@@ -138,24 +144,21 @@ class LLMChat:
         return completion.choices[0].message.content
 
 class QueryAgent(LLMChat):
-    
     def __init__(self, 
-                    translation_examples,
-                    database_schema, 
-                    language_reference, 
-                    session_examples,
-                    db_tools, 
-                    azure_search_service,
-                    language="Kusto Query Language",
-                    max_tries=5, 
-                    debug=False):
+                translation_examples,
+                database_schema, 
+                language_reference, 
+                session_examples,
+                db_tools, 
+                language="Kusto Query Language",
+                max_tries=5, 
+                debug=False):
         self.system_prompt = self.generate_system_prompt(language, translation_examples, 
                                                         database_schema, language_reference, session_examples)
         logging.info(self.system_prompt)
         super().__init__(self.system_prompt, debug)
         self.max_tries = max_tries
         self.db_tools = db_tools
-        self.azure_search_service=azure_search_service
 
     def generate_system_prompt(self, 
                                 language,
@@ -197,13 +200,7 @@ class QueryAgent(LLMChat):
         """.strip()
 
         return prompt
-
-    def create_examples_search_index(self, examples_file):        
-        self.azure_search_service.create_examples_search_index(examples_file, self.llm_chat)
-
-    def search_examples_index(self, query):
-        return self.azure_search_service.search_examples_index(query, self.llm_chat)
-
+    
     def extract_query(self, text):
         pattern_final = re.compile(r'FinalQuery:(.*?)(?:(?=\nOutputQuery:)|(?=$))', re.DOTALL)
         matches_final = pattern_final.findall(text)
@@ -223,6 +220,7 @@ class QueryAgent(LLMChat):
             llm_result = self(next_prompt)
             logging.info(llm_result)
             query_type, query_text = self.extract_query(llm_result)
+            # logging.error(query_type)
             if query_type == 'Output':
                 try: 
                     query_results=self.db_tools.execute_query(query_text)
@@ -231,4 +229,5 @@ class QueryAgent(LLMChat):
                     next_prompt = f"Results: {e}"
                 logging.info(next_prompt)
             else:
+                # logging.error(query_text)
                 return query_text

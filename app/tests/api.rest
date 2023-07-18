@@ -2,8 +2,19 @@
 GET  {{funcUrl}}/api/echo?query="Who are my most valuable customers" HTTP/1.1
 
 ####
+DELETE   {{funcUrl}}/api/index/kqlsamples1 HTTP/1.1
+
+####
+PUT  {{funcUrl}}/api/index HTTP/1.1
+
+{
+  "fileName" : "translation_examples.json", 
+  "indexName": "kqlsamples1"
+}
+
+####
 # GET  {{funcUrl}}/api/kql?query="Who are my most valuable customers" HTTP/1.1
-GET  {{funcUrl}}/api/kql?query="List 10 customers" HTTP/1.1
+GET  {{funcUrl}}/api/kqlquery?query="List 10 customers" HTTP/1.1
 
 
 ####

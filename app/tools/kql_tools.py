@@ -8,30 +8,16 @@ from azure.kusto.data.helpers import dataframe_from_result_table
 from azure.identity import DefaultAzureCredential, AzureCliCredential
 from azure.storage.filedatalake import DataLakeServiceClient
 
-class KQLTools:
-    """
-    KQLTools is a class for handling operations related to Azure Data Lake and Kusto.
-    """
-    def __init__(self, cluster, database, storage_account, storage_container, document_path) -> None:
+class DataLakeTools:
+    def __init__(self, storage_account, storage_container, document_path) -> None:
         """
         Initialize KQLTools with Azure credentials and settings.
         """
-        aad_tenant_id = os.environ['AAD_TENANT_ID']
-        aad_client_id = os.environ['AAD_CLIENT_ID']
-        aad_client_secret = os.environ['AAD_CLIENT_SECRET']
         self.storage_account = storage_account
         self.storage_container = storage_container
         self.document_path = document_path
 
-        connection_string_builder = KustoConnectionStringBuilder.with_aad_application_key_authentication(
-                                        cluster, 
-                                        aad_client_id,
-                                        aad_client_secret, 
-                                        aad_tenant_id)
-        self.client = KustoClient(connection_string_builder)
-        self.database = database
-
-    def _download_file_from_data_lake(self, folder_path, file_name):
+    def download_file_from_data_lake(self, folder_path, file_name):
         """
         Download file from Azure Data Lake.
         """
@@ -52,30 +38,34 @@ class KQLTools:
             print(f"Failed to download file {file_path} from Data Lake: {e}")
             return None
 
-    def _get_decoded_file_content(self, file_name):
+    def get_decoded_file_content(self, file_name):
         """
         Download and decode file content.
         """
         file_content = self._download_file_from_data_lake(self.document_path, file_name)
         return file_content.decode('utf-8') if file_content else None
 
-    def get_context_documents(self):
-        """
-        Get context documents from Azure Data Lake.
-        """
-        # translation_examples = json.dumps(self._get_decoded_file_content("translation_examples.json"))
-        translation_examples = self._get_decoded_file_content("translation_examples.json")
-        database_schema = self._get_decoded_file_content("database_schema.json")
-        language_reference = self._get_decoded_file_content("language_reference.json")
-        session_examples = self._get_decoded_file_content("session_examples.txt")
         
-        return {
-                'translation_examples': translation_examples,  
-                'database_schema': database_schema, 
-                'language_reference': language_reference, 
-                'session_examples': session_examples
-                }
+class KQLTools:
+    """
+    KQLTools is a class for handling operations related to Azure Data Lake and Kusto.
+    """
+    def __init__(self, cluster, database) -> None:
+        """
+        Initialize KQLTools with Azure credentials and settings.
+        """
+        aad_tenant_id = os.environ['AAD_TENANT_ID']
+        aad_client_id = os.environ['AAD_CLIENT_ID']
+        aad_client_secret = os.environ['AAD_CLIENT_SECRET']
 
+        connection_string_builder = KustoConnectionStringBuilder.with_aad_application_key_authentication(
+                                        cluster, 
+                                        aad_client_id,
+                                        aad_client_secret, 
+                                        aad_tenant_id)
+        self.client = KustoClient(connection_string_builder)
+        self.database = database
+          
     def execute_query(self, query):
         """
         Execute Kusto query.
