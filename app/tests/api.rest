@@ -2,14 +2,16 @@
 GET  {{funcUrl}}/api/echo?query="Who are my most valuable customers"&code={{funcKey}} HTTP/1.1
 
 ####
-DELETE   {{funcUrl}}/api/index/kqlsamples1?code={{funcKey}} HTTP/1.1
+DELETE   {{funcUrl}}/api/index/kqlsamples2?code={{funcKey}} HTTP/1.1
+####
+DELETE   {{funcUrl}}/api/index/retail_org_trans_ex?code={{funcKey}} HTTP/1.1
 
 ####
 PUT  {{funcUrl}}/api/index?code={{funcKey}} HTTP/1.1
 
 {
   "fileName" : "translation_examples.json", 
-  "indexName": "kqlsamples1"
+  "indexName": "retail_org_trans_ex_idx"
 }
 
 ####
@@ -20,7 +22,26 @@ POST  {{funcUrl}}/api/kqlquery?code={{funcKey}} HTTP/1.1
 # "query" : "List 10 customers",
 {
   "query" : "who are my most valuable customers",
+  "database": "retail_org",
+  "translationExamplesIndexName": "retail_org_trans_ex_idx",
   "databaseSchemaFileName" : "database_schema.json",
+  "languageReferenceFileName": "language_reference.json",
+  "sessionExampleFileName": "session_examples.txt"
+}
+
+####
+POST  {{funcUrl}}/api/kqlquery?code={{funcKey}} HTTP/1.1
+
+# I need the Service tree concat for the the VPN team?
+# How many teams are there?
+# list the production subsriptions for the 'Pre Provisioning Service (PPS)' team
+# Which VMS of Auditing team are in ISO scope?
+# Which are the teams under ISO scope?
+{
+  "query" : "Which are the teams under ISO scope?",
+  "database": "Fleet",
+  "translationExamplesIndexName": "fleet_trans_ex_idx",
+  "databaseSchemaFileName" : "fleet_database_schema.json",
   "languageReferenceFileName": "language_reference.json",
   "sessionExampleFileName": "session_examples.txt"
 }
