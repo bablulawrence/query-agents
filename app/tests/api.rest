@@ -1,11 +1,11 @@
 ####
-GET  {{funcUrl}}/api/echo?query="Who are my most valuable customers" HTTP/1.1
+GET  {{funcUrl}}/api/echo?query="Who are my most valuable customers"&code={{funcKey}} HTTP/1.1
 
 ####
-DELETE   {{funcUrl}}/api/index/kqlsamples1 HTTP/1.1
+DELETE   {{funcUrl}}/api/index/kqlsamples1?code={{funcKey}} HTTP/1.1
 
 ####
-PUT  {{funcUrl}}/api/index HTTP/1.1
+PUT  {{funcUrl}}/api/index?code={{funcKey}} HTTP/1.1
 
 {
   "fileName" : "translation_examples.json", 
@@ -14,20 +14,13 @@ PUT  {{funcUrl}}/api/index HTTP/1.1
 
 ####
 # GET  {{funcUrl}}/api/kql?query="Who are my most valuable customers" HTTP/1.1
-POST  {{funcUrl}}/api/kqlquery HTTP/1.1
 
+POST  {{funcUrl}}/api/kqlquery?code={{funcKey}} HTTP/1.1
+
+# "query" : "List 10 customers",
 {
-  "query" : "List 10 customers",
+  "query" : "who are my most valuable customers",
   "databaseSchemaFileName" : "database_schema.json",
   "languageReferenceFileName": "language_reference.json",
   "sessionExampleFileName": "session_examples.txt"
 }
-
-
-####
-POST  {{funcUrl}}/api/query-agent HTTP/1.1
-
-{
-  "Query" : "list 10 products",    
-}
-
