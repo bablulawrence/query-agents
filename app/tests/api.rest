@@ -38,7 +38,7 @@ POST  {{funcUrl}}/api/kqlquery?code={{funcKey}} HTTP/1.1
 # Which VMS of Auditing team are in ISO scope?
 # Which are the teams under ISO scope?
 {
-  "query" : "Which are the teams under ISO scope?",
+  "query" : "Which are the teams under ISO scope",
   "database": "Fleet",
   "translationExamplesIndexName": "fleet_trans_ex_idx",
   "databaseSchemaFileName" : "fleet_database_schema.json",

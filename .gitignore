@@ -188,6 +188,9 @@ dist-ssr
 local
 .venv
 
+#others
+/app/__azurite_db_table__.json
+
 #prod build
 /dist
 **local.settings*
