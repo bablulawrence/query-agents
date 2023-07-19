@@ -187,9 +187,13 @@ dist-ssr
 # Local developemnt
 local
 .venv
-.vscode
+
+#others
+/app/__azurite_db_table__.json
 
 #prod build
 /dist
 **local.settings*
 
+
+.python_packages
