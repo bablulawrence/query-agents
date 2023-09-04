@@ -40,10 +40,10 @@ class AzureSearchService:
         fields = [
             SimpleField(name="id", type=SearchFieldDataType.String, key=True, sortable=True, filterable=True, facetable=True),
             SearchableField(name="InputQuery", type=SearchFieldDataType.String),
-            SearchableField(name="OutputQuery", type=SearchFieldDataType.String),
+            SearchableField(name="InterimQuery", type=SearchFieldDataType.String),
             SearchField(name="InputQueryVector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
                         searchable=True, vector_search_dimensions=1536, vector_search_configuration="query-vector-config"),
-            SearchField(name="OutputQueryVector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
+            SearchField(name="InterimQueryVector", type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
                         searchable=True, vector_search_dimensions=1536, vector_search_configuration="query-vector-config"),
         ]
 
@@ -65,8 +65,8 @@ class AzureSearchService:
         semantic_config = SemanticConfiguration(
             name="query-semantic-config",
             prioritized_fields=PrioritizedFields(
-                title_field=SemanticField(field_name="OutputQuery"),
-                prioritized_content_fields=[SemanticField(field_name="OutputQuery")]
+                title_field=SemanticField(field_name="InterimQuery"),
+                prioritized_content_fields=[SemanticField(field_name="InterimQuery")]
             )
         )
 
@@ -80,9 +80,9 @@ class AzureSearchService:
 
         for item in translation_examples:
             input_query = item['InputQuery']
-            output_query = item['OutputQuery']
+            output_query = item['InterimQuery']
             item['InputQueryVector'] = llmchat.generate_embeddings(input_query)
-            item['OutputQueryVector'] = llmchat.generate_embeddings(output_query)
+            item['InterimQueryVector'] = llmchat.generate_embeddings(output_query)
 
         logging.error(json.dumps(translation_examples[0]))
         result = self.search_client.upload_documents(translation_examples)  
@@ -96,12 +96,12 @@ class AzureSearchService:
             vector=vector,
             top_k=3,  
             vector_fields="InputQueryVector",
-            select=["InputQuery", "OutputQuery"],
+            select=["InputQuery", "InterimQuery"],
         )  
 
         results = [{ 
                         "InputQuery": result["InputQuery"], 
-                        "OutputQuery": result["OutputQuery"]
+                        "InterimQuery": result["InterimQuery"]
                     } for result in list(results)]
         return results
 
@@ -184,7 +184,7 @@ class QueryAgent(LLMChat):
         You will output the steps using the following format:
 
         Thought:  You will describe your thought process on how to translate the input query into KQL.
-        OutputQuery:  You will generate the output query.
+        InterimQuery:  You will generate the interim query.
         WAITING:  You will return WAITING.
 
         Results: This is the result of the query execution(first few rows only) which will be provided to you in the next call;\
@@ -193,7 +193,7 @@ class QueryAgent(LLMChat):
         You will analyze the results for errors and inaccuracies, if it is correct, you will generate final output\
         in the following format:
         Thought: Your thought process about the results. 
-        FinalQuery: the latest output query generated. You will not include Results or OutputQuery in the final output.
+        FinalQuery: the latest output query generated. You will not include Results or InterimQuery in the final output.
 
         Here are some example sessions: 
         {session_examples}
@@ -202,16 +202,16 @@ class QueryAgent(LLMChat):
         return prompt
     
     def extract_query(self, text):
-        pattern_final = re.compile(r'FinalQuery:(.*?)(?:(?=\nOutputQuery:)|(?=$))', re.DOTALL)
+        pattern_final = re.compile(r'FinalQuery:(.*?)(?:(?=\nInterimQuery:)|(?=$))', re.DOTALL)
         matches_final = pattern_final.findall(text)
         
         if matches_final:
             return 'Final', matches_final[0].strip()
         
-        pattern_output = re.compile(r'OutputQuery:(.*?)(?:(?=\nWAITING)|(?=\nOutputQuery:)|(?=$))', re.DOTALL)
+        pattern_output = re.compile(r'InterimQuery:(.*?)(?:(?=\nWAITING)|(?=\nInterimQuery:)|(?=$))', re.DOTALL)
         matches_output = pattern_output.findall(text)
 
-        return 'Output', matches_output[-1].strip() if matches_output else None    
+        return 'Interim', matches_output[-1].strip() if matches_output else None    
 
     def query(self, input_query, sample_rows_num=5):
         next_prompt = input_query
@@ -221,7 +221,7 @@ class QueryAgent(LLMChat):
             logging.info(llm_result)
             query_type, query_text = self.extract_query(llm_result)
             # logging.error(query_type)
-            if query_type == 'Output':
+            if query_type == 'Interim':
                 try: 
                     query_results=self.db_tools.execute_query(query_text)
                     next_prompt = f"Results: {query_results.head(sample_rows_num).to_csv()}"
